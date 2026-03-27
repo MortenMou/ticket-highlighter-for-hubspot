@@ -1,31 +1,16 @@
-// HubSpot Image Lightbox
-// Opens images in ticket conversations in a lightbox overlay
-
 (function() {
   'use strict';
 
-  // ============================================
-  // CONFIGURATION
-  // ============================================
-  
   const LIGHTBOX_CONFIG = {
     enabled: true,
-    // Minimum image size to trigger lightbox (skip tiny icons)
     minWidth: 100,
     minHeight: 100,
-    // Zoom levels
     zoomLevels: [1, 1.5, 2, 3],
   };
 
-  // ============================================
-  // LIGHTBOX HTML/CSS
-  // ============================================
-
   function createLightboxElements() {
-    // Check if already created
     if (document.getElementById('hs-lightbox-overlay')) return;
 
-    // Create overlay
     const overlay = document.createElement('div');
     overlay.id = 'hs-lightbox-overlay';
     overlay.innerHTML = `
@@ -47,7 +32,6 @@
       </div>
     `;
 
-    // Add styles
     const styles = document.createElement('style');
     styles.id = 'hs-lightbox-styles';
     styles.textContent = `
@@ -197,13 +181,8 @@
     document.head.appendChild(styles);
     document.body.appendChild(overlay);
 
-    // Set up event listeners
     setupLightboxEvents();
   }
-
-  // ============================================
-  // LIGHTBOX STATE
-  // ============================================
 
   let currentImages = [];
   let currentIndex = 0;
@@ -212,16 +191,11 @@
   let dragStart = { x: 0, y: 0 };
   let imageOffset = { x: 0, y: 0 };
 
-  // ============================================
-  // LIGHTBOX FUNCTIONS
-  // ============================================
-
   function openLightbox(imageSrc, allImages = [], startIndex = 0) {
     createLightboxElements();
     
     const overlay = document.getElementById('hs-lightbox-overlay');
     const img = overlay.querySelector('.hs-lightbox-image');
-    
     currentImages = allImages.length > 0 ? allImages : [imageSrc];
     currentIndex = startIndex;
     currentZoom = 1;
@@ -230,11 +204,8 @@
     loadCurrentImage();
     overlay.classList.add('active');
     document.body.style.overflow = 'hidden';
-    
     updateNavigation();
     updateZoomDisplay();
-    
-    console.log('🖼️ Lightbox opened:', imageSrc);
   }
 
   function closeLightbox() {
@@ -250,10 +221,8 @@
     const overlay = document.getElementById('hs-lightbox-overlay');
     const img = overlay.querySelector('.hs-lightbox-image');
     const counter = overlay.querySelector('.hs-lightbox-counter');
-    
     img.src = currentImages[currentIndex];
     resetImagePosition();
-    
     if (currentImages.length > 1) {
       counter.textContent = `${currentIndex + 1} / ${currentImages.length}`;
       counter.style.display = 'block';
@@ -286,9 +255,7 @@
     prevBtn.disabled = currentIndex === 0;
     nextBtn.disabled = currentIndex === currentImages.length - 1;
     
-    // Hide nav if only one image
-    const nav = overlay.querySelector('.hs-lightbox-nav');
-    nav.style.display = currentImages.length > 1 ? 'flex' : 'none';
+    overlay.querySelector('.hs-lightbox-nav').style.display = currentImages.length > 1 ? 'flex' : 'none';
   }
 
   function zoomIn() {
@@ -297,7 +264,6 @@
     if (currentLevelIndex < levels.length - 1) {
       currentZoom = levels[currentLevelIndex + 1];
     } else if (currentLevelIndex === -1) {
-      // Find next higher level
       currentZoom = levels.find(l => l > currentZoom) || levels[levels.length - 1];
     }
     applyZoom();
@@ -309,7 +275,6 @@
     if (currentLevelIndex > 0) {
       currentZoom = levels[currentLevelIndex - 1];
     } else if (currentLevelIndex === -1) {
-      // Find next lower level
       currentZoom = [...levels].reverse().find(l => l < currentZoom) || levels[0];
     }
     applyZoom();
@@ -347,27 +312,20 @@
     window.open(currentImages[currentIndex], '_blank');
   }
 
-  // ============================================
-  // EVENT HANDLERS
-  // ============================================
-
   function setupLightboxEvents() {
     const overlay = document.getElementById('hs-lightbox-overlay');
     const img = overlay.querySelector('.hs-lightbox-image');
 
-    // Close on overlay click (not on image)
     overlay.addEventListener('click', (e) => {
       if (e.target === overlay || e.target.classList.contains('hs-lightbox-container')) {
         closeLightbox();
       }
     });
 
-    // Prevent closing when clicking image
     img.addEventListener('click', (e) => {
       e.stopPropagation();
     });
 
-    // Button handlers
     overlay.querySelector('.hs-lightbox-close').addEventListener('click', closeLightbox);
     overlay.querySelector('.hs-lightbox-zoom-in').addEventListener('click', zoomIn);
     overlay.querySelector('.hs-lightbox-zoom-out').addEventListener('click', zoomOut);
@@ -376,7 +334,6 @@
     overlay.querySelector('.hs-lightbox-prev').addEventListener('click', prevImage);
     overlay.querySelector('.hs-lightbox-next').addEventListener('click', nextImage);
 
-    // Keyboard navigation
     document.addEventListener('keydown', (e) => {
       if (!overlay.classList.contains('active')) return;
       
@@ -403,7 +360,6 @@
       }
     });
 
-    // Mouse wheel zoom
     overlay.addEventListener('wheel', (e) => {
       e.preventDefault();
       if (e.deltaY < 0) {
@@ -413,7 +369,6 @@
       }
     });
 
-    // Drag to pan when zoomed
     img.addEventListener('mousedown', (e) => {
       if (currentZoom > 1) {
         isDragging = true;
@@ -439,52 +394,33 @@
     });
   }
 
-  // ============================================
-  // IMAGE DETECTION
-  // ============================================
-
   function makeImagesClickable() {
     if (!LIGHTBOX_CONFIG.enabled) return;
 
-    // Find images in conversation/email threads
-    // Target common HubSpot conversation containers
     const selectors = [
-      // Email body images
       '[data-test-id="email-body"] img',
-      // Thread messages
       '.private-timeline__item img',
-      // Conversation panels
       '[class*="ConversationPanel"] img',
       '[class*="MessageBody"] img',
       '[class*="EmailBody"] img',
-      // Generic message content
       '[class*="message"] img',
       '[class*="thread"] img',
-      // Attachments
       '[class*="attachment"] img',
-      // Fallback: any img in main content area that's big enough
       'main img',
       '[role="main"] img'
     ];
 
-    const allImages = document.querySelectorAll(selectors.join(', '));
-    const validImages = [];
-
-    allImages.forEach(img => {
-      // Skip if already processed
+    document.querySelectorAll(selectors.join(', ')).forEach(img => {
       if (img.dataset.hsLightbox) return;
       
-      // Skip small images (icons, avatars)
       if (img.naturalWidth < LIGHTBOX_CONFIG.minWidth || 
           img.naturalHeight < LIGHTBOX_CONFIG.minHeight) {
-        // Check display size as fallback (naturalWidth may be 0 if not loaded)
         if (img.offsetWidth < LIGHTBOX_CONFIG.minWidth || 
             img.offsetHeight < LIGHTBOX_CONFIG.minHeight) {
           return;
         }
       }
 
-      // Skip UI elements (buttons, icons, avatars)
       if (img.closest('button') || 
           img.closest('[role="button"]') ||
           img.closest('nav') ||
@@ -496,24 +432,17 @@
         return;
       }
 
-      // Skip base64 tiny images (usually icons)
       if (img.src.startsWith('data:') && img.src.length < 1000) {
         return;
       }
 
-      // Mark as processed
       img.dataset.hsLightbox = 'true';
       img.classList.add('hs-clickable-image');
-      validImages.push(img);
 
-      // Add click handler
       img.addEventListener('click', (e) => {
         if (!LIGHTBOX_CONFIG.enabled) return;
-        
         e.preventDefault();
         e.stopPropagation();
-        
-        // Collect all clickable images in the same context
         const nearbyImages = Array.from(
           document.querySelectorAll('.hs-clickable-image')
         ).map(i => i.src);
@@ -522,55 +451,34 @@
         openLightbox(img.src, nearbyImages, index >= 0 ? index : 0);
       });
     });
-
-    if (validImages.length > 0) {
-      console.log(`🖼️ Made ${validImages.length} images clickable for lightbox`);
-    }
   }
 
-  // ============================================
-  // DISABLE LIGHTBOX
-  // ============================================
-
   function disableLightbox() {
-    // Remove clickable class from all images
     document.querySelectorAll('.hs-clickable-image').forEach(img => {
       img.classList.remove('hs-clickable-image');
     });
     
-    // Close lightbox if open
     closeLightbox();
-    
-    console.log('🖼️ Lightbox disabled');
   }
 
   function enableLightbox() {
     LIGHTBOX_CONFIG.enabled = true;
     makeImagesClickable();
-    console.log('🖼️ Lightbox enabled');
   }
-
-  // ============================================
-  // INITIALIZATION
-  // ============================================
 
   let observer = null;
 
   function init() {
-    // Load settings
     if (typeof chrome !== 'undefined' && chrome.storage) {
       chrome.storage.sync.get(['highlighterConfig'], (result) => {
         const config = result.highlighterConfig || {};
-        LIGHTBOX_CONFIG.enabled = config.enableLightbox !== false; // Default to true
+        LIGHTBOX_CONFIG.enabled = config.enableLightbox !== false;
         
         if (LIGHTBOX_CONFIG.enabled) {
           startLightbox();
-        } else {
-          console.log('🖼️ Lightbox is disabled in settings');
         }
       });
 
-      // Listen for settings changes
       chrome.storage.onChanged.addListener((changes) => {
         if (changes.highlighterConfig) {
           const newConfig = changes.highlighterConfig.newValue || {};
@@ -585,16 +493,13 @@
         }
       });
     } else {
-      // No chrome.storage, just start
       startLightbox();
     }
   }
 
   function startLightbox() {
-    // Initial scan
     makeImagesClickable();
 
-    // Watch for new images (dynamic content)
     observer = new MutationObserver(() => {
       if (LIGHTBOX_CONFIG.enabled) {
         makeImagesClickable();
@@ -605,11 +510,8 @@
       childList: true,
       subtree: true
     });
-
-    console.log('🖼️ HubSpot Image Lightbox loaded');
   }
 
-  // Start when DOM is ready
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', init);
   } else {

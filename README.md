@@ -1,6 +1,6 @@
-# HubSpot Ticket Helper - Chrome Extension
+# Ticket Highlighter for HubSpot
 
-A Chrome extension to enhance your HubSpot ticket workflow with visual highlights and an image lightbox.
+A Chrome extension that visually highlights tickets in HubSpot based on age and urgency, with an image lightbox for conversations.
 
 ## Features
 
@@ -99,22 +99,16 @@ The extension:
 
 **Table view not highlighting?**
 - Make sure a date column is visible (Create Date or Last Activity)
-- Check the browser console (F12) for debug messages starting with 🎨
 - The extension identifies columns by their header text
 
 **Colors not showing?**
-- Refresh the page after installing/updating the extension
+- Refresh the page after installing or updating the extension
 - Check that the extension is enabled in chrome://extensions/
 
 **Lightbox not working?**
 - Make sure "Image Lightbox" is enabled in the extension settings
-- Only images larger than 100x100 pixels are clickable (to skip icons)
-- Check the console for messages starting with 🖼️
-
-**Extension not loading on first page visit?**
-- This can happen with single-page apps like HubSpot
-- The extension now retries multiple times on load, but a refresh may occasionally be needed
+- Only images larger than 100×100 pixels are clickable (to skip icons)
 
 ## Author
 
-Created by Morten Mouritzen for TRY Dig
+Created by Morten Mouritzen

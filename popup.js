@@ -1,5 +1,3 @@
-// HubSpot Ticket Helper - Popup Script
-
 document.addEventListener('DOMContentLoaded', () => {
   const elements = {
     enabled: document.getElementById('enabled'),
@@ -12,7 +10,6 @@ document.addEventListener('DOMContentLoaded', () => {
     saveBtn: document.getElementById('saveBtn')
   };
 
-  // Default configuration
   const defaultConfig = {
     enabled: true,
     showIndicator: false,
@@ -23,7 +20,6 @@ document.addEventListener('DOMContentLoaded', () => {
     warningTicketDays: 5
   };
 
-  // Load saved settings
   function loadSettings() {
     chrome.storage.sync.get(['highlighterConfig'], (result) => {
       const config = result.highlighterConfig || defaultConfig;
@@ -31,14 +27,13 @@ document.addEventListener('DOMContentLoaded', () => {
       elements.enabled.checked = config.enabled;
       elements.highlightUnassigned.checked = config.highlightUnassigned;
       elements.showIndicator.checked = config.showIndicator;
-      elements.enableLightbox.checked = config.enableLightbox !== false; // Default to true
+      elements.enableLightbox.checked = config.enableLightbox !== false;
       elements.urgentKeywords.value = config.urgentKeywords.join(', ');
       elements.freshTicketDays.value = config.freshTicketDays;
       elements.warningTicketDays.value = config.warningTicketDays;
     });
   }
 
-  // Save settings
   function saveSettings() {
     const config = {
       enabled: elements.enabled.checked,
@@ -54,7 +49,6 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     chrome.storage.sync.set({ highlighterConfig: config }, () => {
-      // Visual feedback
       elements.saveBtn.textContent = '✓ Saved!';
       elements.saveBtn.classList.add('saved');
       
@@ -63,25 +57,19 @@ document.addEventListener('DOMContentLoaded', () => {
         elements.saveBtn.classList.remove('saved');
       }, 2000);
 
-      // Notify content script to refresh
       chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
         if (tabs[0]?.id) {
-          chrome.tabs.sendMessage(tabs[0].id, { action: 'refresh' }).catch(() => {
-            // Tab might not have content script loaded
-          });
+          chrome.tabs.sendMessage(tabs[0].id, { action: 'refresh' }).catch(() => {});
         }
       });
     });
   }
 
-  // Event listeners
   elements.saveBtn.addEventListener('click', saveSettings);
 
-  // Auto-save on toggle changes
   ['enabled', 'highlightUnassigned', 'showIndicator', 'enableLightbox'].forEach(id => {
     elements[id].addEventListener('change', saveSettings);
   });
 
-  // Load settings on popup open
   loadSettings();
 });

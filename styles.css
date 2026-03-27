@@ -1,29 +1,14 @@
-/* HubSpot Highlighter - Custom Styles for TRY CS Team */
-
-/* ============================================
-   CONFIGURATION - Edit these CSS variables
-   ============================================ */
 :root {
-  /* Highlight colors */
-  --hs-highlight-urgent: #ff4757;      /* Red - urgent keywords */
-  --hs-highlight-fresh: #2ed573;       /* Green - 0-2 days */
-  --hs-highlight-attention: #ffa502;   /* Yellow/Orange - 3-5 days */
-  --hs-highlight-overdue: #a55eea;     /* Purple - 6+ days */
-  --hs-highlight-info: #3742fa;        /* Blue - info */
-  --hs-highlight-muted: #747d8c;
-  
-  /* Glow effects */
+  --hs-highlight-urgent: #ff4757;
+  --hs-highlight-fresh: #2ed573;
+  --hs-highlight-attention: #ffa502;
+  --hs-highlight-overdue: #a55eea;
   --hs-glow-urgent: 0 0 0 3px rgba(255, 71, 87, 0.3);
   --hs-glow-fresh: 0 0 0 3px rgba(46, 213, 115, 0.3);
   --hs-glow-attention: 0 0 0 3px rgba(255, 165, 2, 0.3);
   --hs-glow-overdue: 0 0 0 3px rgba(165, 94, 234, 0.3);
 }
 
-/* ============================================
-   TICKET CARD HIGHLIGHTS (Board View)
-   ============================================ */
-
-/* Urgent cards - red highlight (keywords like haster, kritisk) */
 .hs-card-urgent {
   border: 2px solid var(--hs-highlight-urgent) !important;
   border-left-width: 4px !important;
@@ -32,7 +17,6 @@
   animation: urgentPulse 3s ease-in-out infinite;
 }
 
-/* Fresh cards - green highlight (0-2 days since last activity) */
 .hs-card-fresh {
   border: 2px solid var(--hs-highlight-fresh) !important;
   border-left-width: 4px !important;
@@ -40,7 +24,6 @@
   background: linear-gradient(90deg, rgba(46, 213, 115, 0.08) 0%, transparent 50%) !important;
 }
 
-/* Attention cards - yellow/orange highlight (3-5 days since last activity) */
 .hs-card-attention {
   border: 2px solid var(--hs-highlight-attention) !important;
   border-left-width: 4px !important;
@@ -48,7 +31,6 @@
   background: linear-gradient(90deg, rgba(255, 165, 2, 0.08) 0%, transparent 50%) !important;
 }
 
-/* Overdue cards - purple highlight (6+ days since last activity) */
 .hs-card-overdue {
   border: 2px solid var(--hs-highlight-overdue) !important;
   border-left-width: 4px !important;
@@ -56,14 +38,10 @@
   background: linear-gradient(90deg, rgba(165, 94, 234, 0.08) 0%, transparent 50%) !important;
 }
 
-/* Unassigned cards - dashed border style (keeps the age color) */
 .hs-card-unassigned {
   border-style: dashed !important;
 }
 
-/* ============================================
-   PULSE ANIMATION FOR URGENT
-   ============================================ */
 @keyframes urgentPulse {
   0%, 100% { 
     box-shadow: var(--hs-glow-urgent), 0 2px 8px rgba(0,0,0,0.1);
@@ -73,12 +51,6 @@
   }
 }
 
-/* ============================================
-   TABLE ROW HIGHLIGHTS
-   Simple background colors that work with any table structure
-   ============================================ */
-
-/* Apply to TR elements */
 tr.hs-row-urgent,
 tr.hs-row-urgent > td {
   background-color: rgba(255, 71, 87, 0.12) !important;
@@ -99,7 +71,6 @@ tr.hs-row-overdue > td {
   background-color: rgba(165, 94, 234, 0.12) !important;
 }
 
-/* Left border indicator on first cell */
 tr.hs-row-urgent > td:first-child {
   box-shadow: inset 4px 0 0 var(--hs-highlight-urgent) !important;
 }
@@ -116,24 +87,10 @@ tr.hs-row-overdue > td:first-child {
   box-shadow: inset 4px 0 0 var(--hs-highlight-overdue) !important;
 }
 
-/* ============================================
-   UNASSIGNED INDICATOR (disabled for table - too messy)
-   ============================================ */
-.hs-card-unassigned.hs-unassigned {
-  position: relative;
-}
-
-/* ============================================
-   HOVER ENHANCEMENTS
-   ============================================ */
-
 table tbody tr:hover {
   background-color: rgba(55, 66, 250, 0.08) !important;
 }
 
-/* ============================================
-   EXTENSION TOGGLE INDICATOR
-   ============================================ */
 .hs-highlighter-active {
   position: fixed;
   bottom: 20px;
