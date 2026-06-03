@@ -1,15 +1,15 @@
 {
   "manifest_version": 3,
   "name": "Ticket Highlighter for HubSpot",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "Highlight important items in HubSpot. Using 'Last Activity Date' as guide, so this must be present in the view",
   "permissions": ["storage"],
   "host_permissions": ["https://app.hubspot.com/*", "https://app-eu1.hubspot.com/*"],
   "content_scripts": [
     {
       "matches": ["https://app.hubspot.com/*", "https://app-eu1.hubspot.com/*"],
-      "css": ["styles.css"],
-      "js": ["content.js", "lightbox.js"],
+      "css": ["styles.css", "flag-tickets.css"],
+      "js": ["content.js", "lightbox.js", "flag-tickets.js"],
       "run_at": "document_idle"
     }
   ],
